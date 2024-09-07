@@ -1,98 +1,107 @@
 # Docker-Compose Voting Application
 
-# Voting App Setup
+# Voting Application
 
-This project demonstrates a voting application built with Docker, Redis, PostgreSQL, and worker services. Below are the steps to build and run the application components.
+This project demonstrates a complete voting application consisting of multiple services running in Docker containers. The architecture includes a Python front-end for voting, Redis for collecting votes, a .NET worker for processing, PostgreSQL for storing data, and a Node.js app for displaying results.
 
-## Prerequisites
+## Architecture Overview
+
+The application is composed of the following components:
+
+1. **Front-End Web App (Python)**: A simple front-end built in Python, allowing users to vote between two options.
+2. **Redis**: A fast, in-memory data store that collects and temporarily stores the votes before processing.
+3. **.NET Worker**: A backend worker service written in .NET that consumes the votes from Redis and stores them in a database.
+4. **PostgreSQL Database**: A relational database that permanently stores the votes, backed by a Docker volume to persist data.
+5. **Results Web App (Node.js)**: A Node.js application that displays the results of the voting in real time, based on data stored in PostgreSQL.
+
+## Services
+
+### 1. Front-End Voting App (Python)
+This service allows users to submit their votes. Votes are sent to Redis for processing.
+
+### 2. Redis
+Redis acts as the message queue for incoming votes. Votes are stored temporarily before being processed by the .NET worker.
+
+### 3. .NET Worker
+The .NET worker service consumes the votes from Redis, processes them, and stores them in a PostgreSQL database.
+
+### 4. PostgreSQL Database
+The database is used to store the voting results. Data is persisted using Docker volumes, so it remains intact across container restarts.
+
+### 5. Real-Time Results App (Node.js)
+This service provides a real-time view of the voting results. It queries the PostgreSQL database to get the latest voting data and displays it to the user.
+
+## Running the Application
+
+Each component runs in its own Docker container, making it easy to deploy and scale. Follow these steps to set up and run the application:
+
+### Prerequisites
 
 - Docker installed on your system
-- Docker Compose (optional but recommended for simplifying multi-container setups)
+- Docker Compose (optional)
 
-## Build and Run the Voting App
+### Running the Services
 
-### 1. Navigate to the `vote` folder and build the image
+1. **Build and Run the Voting App (Python)**
 
-```bash
-cd path/to/vote
-sudo docker build -t voting-app .
-```
+    Navigate to the `vote` folder and build the Docker image for the front-end voting app:
 
-### 2. Run the Voting App
+    ```bash
+    cd path/to/vote
+    sudo docker build -t voting-app .
+    sudo docker run -d -p 5000:80 voting-app
+    ```
 
-Run the app and expose it on port 5000:
+2. **Run Redis**
 
-```bash
-sudo docker run -d -p 5000:80 voting-app
-```
+    Run Redis in the background to collect votes:
 
-### 3. Run Redis in the background
+    ```bash
+    sudo docker run -d --name=redis redis
+    ```
 
-Pull and run the Redis image, and name the container `redis`:
+3. **Link the Voting App with Redis**
 
-```bash
-sudo docker run -d --name=redis redis
-```
+    Link the voting app with the Redis service:
 
-### 4. Link the Voting App with Redis
+    ```bash
+    sudo docker run -d -p 5000:80 --link redis:redis voting-app
+    ```
 
-Run the voting app and link it with the Redis container:
+4. **Run PostgreSQL for the Worker App**
 
-```bash
-sudo docker run -d -p 5000:80 --link redis:redis voting-app
-```
+    Start the PostgreSQL database service:
 
-## Set up PostgreSQL Database for Worker App
+    ```bash
+    sudo docker run --name=db -e POSTGRES_PASSWORD=postgres postgres:9.4
+    ```
 
-### 1. Run PostgreSQL for the Worker App
+5. **Build and Run the Worker App (.NET)**
 
-Run the PostgreSQL database and set a password for the `postgres` user:
+    Navigate to the `worker` folder, build the worker service, and run it:
 
-```bash
-sudo docker run --name=db -e POSTGRES_PASSWORD=postgres postgres:9.4
-```
+    ```bash
+    cd path/to/worker
+    sudo docker build -t worker-app .
+    sudo docker run -d --link redis:redis --link db:db worker-app
+    ```
 
-## Build and Run the Worker App
+6. **Build and Run the Results App (Node.js)**
 
-### 1. Navigate to the `worker` folder and build the image
+    Navigate to the `result` folder, build the Docker image for the results app, and run it:
 
-```bash
-cd path/to/worker
-sudo docker build -t worker-app .
-```
+    ```bash
+    cd path/to/result
+    sudo docker build -t result-app .
+    sudo docker run -d -p 5001:80 --link db:db result-app
+    ```
 
-### 2. Link the Worker App with Redis and PostgreSQL
+### Viewing the Application
 
-Run the worker app, linking it with both the Redis and PostgreSQL containers:
-
-```bash
-sudo docker run -d --link redis:redis --link db:db worker-app
-```
-
-## Build and Run the Result App
-
-### 1. Navigate to the `result` folder and build the image
-
-```bash
-cd path/to/result
-sudo docker build -t result-app .
-```
-
-### 2. Run the Result App on Port 5001
-
-Run the result app, exposing it on port 5001 and linking it with the PostgreSQL container:
-
-```bash
-sudo docker run -d -p 5001:80 --link db:db result-app
-```
+- **Voting App**: Visit `http://localhost:5000` to cast your vote.
+- **Results App**: Visit `http://localhost:5001` to view the voting results in real time.
 
 ## Conclusion
 
-After following the above steps, you should have all parts of the voting app running in separate containers:
+This voting app demonstrates how to build a microservices-based application using multiple technologies such as Python, Redis, .NET, PostgreSQL, and Node.js. Each service is containerized with Docker, making it easy to deploy, scale, and manage.
 
-- Voting app on port 5000
-- Result app on port 5001
-- Redis for in-memory data storage
-- PostgreSQL as a relational database for the worker app
-
-Make sure to test each component by accessing the appropriate ports on your machine or server.
