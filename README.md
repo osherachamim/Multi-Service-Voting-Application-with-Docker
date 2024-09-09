@@ -72,8 +72,35 @@ services:
     ports:
       - 5001:80
 ```
+### 2. Build the Images 
+ Navigate to the `vote` folder and build the Docker image for the front-end voting app:
 
-### 2. Run the Entire Application
+```bash
+    cd path/to/vote
+    sudo docker build -t voting-app .
+```
+Pull Redis in the background to collect votes:
+
+    ```bash
+    sudo docker pull redis
+    ```
+Pull the PostgreSQL database Image:
+
+    ```bash
+    sudo docker pull postgres:9.4
+    ```
+Navigate to the `worker` folder, build the worker service, and run it:
+
+    ```bash
+    cd path/to/worker
+    sudo docker build -t worker-app .
+
+View the images you have pulled & Build:
+```bash
+sudo docker images
+```
+
+### 3. Run the Entire Application
 You can now use the following command to build and run all the services:
 ```bash
 sudo docker-compose up --build
@@ -89,7 +116,7 @@ sudo docker-compose up --build
 - Results App: Visit http://localhost:5001 to view the voting results in real time.
 
 
-### 3.Stopping the Application
+### 4.Stopping the Application
 To stop all running services, use:
 ```bash
 sudo docker-compose down
