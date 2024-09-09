@@ -38,9 +38,65 @@ Each component runs in its own Docker container, making it easy to deploy and sc
 ### Prerequisites
 
 - Docker installed on your system
-- Docker Compose (optional)
+- Docker Compose (version 3 or higher)
 
-### Running the Services
+### Running the Services Using Docker-Compose (Version 3)
+
+You can run all the services (Redis, PostgreSQL, voting app, worker, and result app) simultaneously using `docker-compose`. The following steps will guide you through it.
+
+### 1. Create a `docker-compose.yml` File
+
+Ensure your `docker-compose.yml` file looks like this:
+
+```yaml
+version: "3"
+services:
+  redis:
+    image: redis
+
+  db:
+    image: postgres:9.4
+    environment:
+      POSTGRES_PASSWORD: postgres
+      
+  vote:
+    image: voting-app
+    ports:
+      - 5000:80
+
+  worker:
+    image: worker-app
+
+  result:
+    image: result-app
+    ports:
+      - 5001:80
+```
+
+### 2. Run the Entire Application
+You can now use the following command to build and run all the services:
+```bash
+sudo docker-compose up --build
+```
+
+## This will
+
+- Build the voting-app, worker-app, and result-app images.
+-Start the Redis and PostgreSQL containers.
+-Start the voting and result applications on ports 5000 and 5001, respectively.
+### 3. Accessing the Application
+- Voting App: Visit http://localhost:5000 to cast your vote.
+- Results App: Visit http://localhost:5001 to view the voting results in real time.
+
+
+### 3.Stopping the Application
+To stop all running services, use:
+```bash
+sudo docker-compose down
+```
+This will stop and remove all running containers.
+
+### Running the Services Manually
 
 1. **Build and Run the Voting App (Python)**
 
