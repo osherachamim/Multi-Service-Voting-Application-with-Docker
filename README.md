@@ -44,7 +44,33 @@ Each component runs in its own Docker container, making it easy to deploy and sc
 
 You can run all the services (Redis, PostgreSQL, voting app, worker, and result app) simultaneously using `docker-compose`. The following steps will guide you through it.
 
-### 1. Create a `docker-compose.yml` File
+
+### 1. Build the Images 
+ Navigate to the `vote` folder and build the Docker image for the front-end voting app:
+```bash
+    cd path/to/vote
+    sudo docker build -t voting-app .
+```
+Pull Redis in the background to collect votes:
+ ```bash
+    sudo docker pull redis
+ ```
+Pull the PostgreSQL database Image:
+
+ ```bash
+    sudo docker pull postgres:9.4
+  ```
+Navigate to the `worker` folder, build the worker service, and run it:
+
+   ```bash
+    cd path/to/worker
+    sudo docker build -t worker-app .
+```
+View the images you have pulled & Build:
+```bash
+sudo docker images
+```
+### 2. Create a `docker-compose.yml` File
 
 Ensure your `docker-compose.yml` file looks like this:
 
@@ -72,32 +98,6 @@ services:
     ports:
       - 5001:80
 ```
-### 2. Build the Images 
- Navigate to the `vote` folder and build the Docker image for the front-end voting app:
-```bash
-    cd path/to/vote
-    sudo docker build -t voting-app .
-```
-Pull Redis in the background to collect votes:
- ```bash
-    sudo docker pull redis
- ```
-Pull the PostgreSQL database Image:
-
- ```bash
-    sudo docker pull postgres:9.4
-  ```
-Navigate to the `worker` folder, build the worker service, and run it:
-
-   ```bash
-    cd path/to/worker
-    sudo docker build -t worker-app .
-```
-View the images you have pulled & Build:
-```bash
-sudo docker images
-```
-
 ### 3. Run the Entire Application
 You can now use the following command to build and run all the services:
 ```bash
