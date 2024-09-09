@@ -74,27 +74,25 @@ services:
 ```
 ### 2. Build the Images 
  Navigate to the `vote` folder and build the Docker image for the front-end voting app:
-
 ```bash
     cd path/to/vote
     sudo docker build -t voting-app .
 ```
 Pull Redis in the background to collect votes:
-
-    ```bash
+ ```bash
     sudo docker pull redis
-    ```
+ ```
 Pull the PostgreSQL database Image:
 
-    ```bash
+ ```bash
     sudo docker pull postgres:9.4
-    ```
+  ```
 Navigate to the `worker` folder, build the worker service, and run it:
 
-    ```bash
+   ```bash
     cd path/to/worker
     sudo docker build -t worker-app .
-
+```
 View the images you have pulled & Build:
 ```bash
 sudo docker images
