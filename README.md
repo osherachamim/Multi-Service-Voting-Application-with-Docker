@@ -104,8 +104,6 @@ You can now use the following command to build and run all the services:
 sudo docker-compose up --build
 ```
 
-## This will
-
 - Build the voting-app, worker-app, and result-app images.
 -Start the Redis and PostgreSQL containers.
 -Start the voting and result applications on ports 5000 and 5001, respectively.
