@@ -3,7 +3,7 @@
 # Voting Application
 
 This project demonstrates a complete voting application consisting of multiple services running in Docker containers. The architecture includes a Python front-end for voting, Redis for collecting votes, a .NET worker for processing, PostgreSQL for storing data, and a Node.js app for displaying results.
-
+![Project UI](project-diagram.png)
 ## Architecture Overview
 
 The application is composed of the following components:
