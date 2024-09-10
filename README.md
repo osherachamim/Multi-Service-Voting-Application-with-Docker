@@ -180,7 +180,7 @@ This will stop and remove all running containers.
 - **Voting App**: Visit `http://localhost:5000` to cast your vote.
 - **Results App**: Visit `http://localhost:5001` to view the voting results in real time.
 
-![App UI](Visual App UI.jpg)
+![App UI](visual-app-ui.jpg)
 
 ## Conclusion
 
